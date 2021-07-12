@@ -1,5 +1,5 @@
 {
-   "name": "penobit/router",
+   "name": "penobit/irouter",
    "description": "A lightning fast router for PHP",
    "keywords": ["router", "routing", "lightweight"],
    "homepage": "https://github.com/dannyvankooten/AltoRouter",

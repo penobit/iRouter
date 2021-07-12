@@ -1,56 +1,111 @@
-# AltoRouter  [![Build Status](https://img.shields.io/travis/dannyvankooten/AltoRouter/master)](https://travis-ci.org/dannyvankooten/AltoRouter) [![Latest Stable Version](https://poser.pugx.org/altorouter/altorouter/v/stable.svg)](https://packagist.org/packages/altorouter/altorouter) [![License](https://poser.pugx.org/altorouter/altorouter/license.svg)](https://packagist.org/packages/altorouter/altorouter) [![Code Climate](https://codeclimate.com/github/dannyvankooten/AltoRouter/badges/gpa.svg)](https://codeclimate.com/github/dannyvankooten/AltoRouter) [![Test Coverage](https://codeclimate.com/github/dannyvankooten/AltoRouter/badges/coverage.svg)](https://codeclimate.com/github/dannyvankooten/AltoRouter)
-AltoRouter is a small but powerful routing class, heavily inspired by [klein.php](https://github.com/chriso/klein.php/).
+# iRouter
+ [![Build Status](https://img.shields.io/travis/penobit/iRouter/master)](https://travis-ci.org/penobit/iRouter) [![Latest Stable Version](https://poser.pugx.org/penobit/irouter/v/stable.svg)](https://packagist.org/packages/penobit/irouter) [![License](https://poser.pugx.org/penobit/irouter/license.svg)](https://packagist.org/packages/penobit/irouter)
+
+- [iRouter](#irouter)
+  - [Installation](#installation)
+  - [Requirements](#requirements)
+  - [Features](#features)
+  - [Examples](#examples)
+    - [Adding a route](#adding-a-route)
+    - [Adding multiple routes at once](#adding-multiple-routes-at-once)
+    - [Dynamic routes (with parameters)](#dynamic-routes-with-parameters)
+    - [Match types](#match-types)
+      - [adding a match type](#adding-match-types)
+      - [Default match types](#default-match-types)
+
+## Installation
+You can install this package using composer or download last release from github and include the iRouter.php file
+But i strongly recommend using composer
+For installing package using composer use this command
+
+```
+composer require penobit/irouter
+```
+
+## Requirements
+
+You need PHP >= 5.6 to use iRouter, although we highly recommend you [use an officially supported PHP version](https://secure.php.net/supported-versions.php) that is not EOL.
+
+## Features
+
+- Can be used with all HTTP Methods
+- Dynamic routing with named route parameters
+- Reversed routing
+- Flexible regular expression routing
+- Custom regexes
+
+# Examples 
+
+## Adding a route
 
 ```php
-$router = new AltoRouter();
+$router = new iRouter();
 
 // map homepage
 $router->map('GET', '/', function() {
     require __DIR__ . '/views/home.php';
 });
+``` 
 
+## Adding multiple routes at once
+
+```php
+// Add multiple routes
+$router->addRoutes(array(
+  array('GET','/users/[i:id]', 'users#get', 'update_user'),
+  array('PUT','/users/[i:id]', 'users#create', 'update_user'),
+  array('PATCH','/users/[i:id]', 'users#update', 'update_user'),
+  array('DELETE','/users/[i:id]', 'users#delete', 'delete_user')
+));
+``` 
+
+## Dynamic routes (with parameters)
+
+```php
 // dynamic named route
 $router->map('GET|POST', '/users/[i:id]/', function($id) {
   $user = .....
   require __DIR__ . '/views/user/details.php';
 }, 'user-details');
+``` 
 
+## Generate url by named routes
+
+```php
 // echo URL to user-details page for ID 5
 echo $router->generate('user-details', ['id' => 5]); // Output: "/users/5"
+``` 
+
+## Match types
+
+### Adding match types
+
+```php
+// Add match type
+$router->addMatchTypes(array('customType' => '[a-zA-Z]{2}[0-9]?'));
+$router->map('GET', '/use-match-type/[customType:paramName]', function() {
+    require __DIR__ . '/views/home.php';
+});
 ```
 
-## Features
+### Default match types
 
-* Can be used with all HTTP Methods
-* Dynamic routing with named route parameters
-* Reversed routing
-* Flexible regular expression routing (inspired by [Sinatra](http://www.sinatrarb.com/))
-* Custom regexes
+```
+*                    // Match all request URIs
+[i]                  // Match an integer
+[i:id]               // Match an integer as 'id'
+[a:action]           // Match alphanumeric characters as 'action'
+[h:key]              // Match hexadecimal characters as 'key'
+[:action]            // Match anything up to the next / or end of the URI as 'action'
+[create|edit:action] // Match either 'create' or 'edit' as 'action'
+[*]                  // Catch all (lazy, stops at the next trailing slash)
+[*:trailing]         // Catch all as 'trailing' (lazy)
+[**:trailing]        // Catch all (possessive - will match the rest of the URI)
+.[:format]?          // Match an optional parameter 'format' - a / or . before the block is also optional
+```
 
-## Getting started
-
-You need PHP >= 5.6 to use AltoRouter, although we highly recommend you [use an officially supported PHP version](https://secure.php.net/supported-versions.php) that is not EOL.
-
-- [Install AltoRouter](http://altorouter.com/usage/install.html)
-- [Rewrite all requests to AltoRouter](http://altorouter.com/usage/rewrite-requests.html)
-- [Map your routes](http://altorouter.com/usage/mapping-routes.html)
-- [Match requests](http://altorouter.com/usage/matching-requests.html)
-- [Process the request your preferred way](http://altorouter.com/usage/processing-requests.html)
-
-## Contributors
-- [Danny van Kooten](https://github.com/dannyvankooten)
-- [Koen Punt](https://github.com/koenpunt)
-- [John Long](https://github.com/adduc)
-- [Niahoo Osef](https://github.com/niahoo)
-
-## License
-
-MIT License
-
-Copyright (c) 2012 Danny van Kooten <hi@dannyvankooten.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+<!-- - [Install iRouter](http://penobit.com/repositories/iRouter/usage/install.html)
+- [Rewrite all requests to iRouter](http://penobit.com/repositories/iRouter/usage/rewrite-requests.html)
+- [Map your routes](http://penobit.com/repositories/iRouter/usage/mapping-routes.html)
+- [Match requests](http://penobit.com/repositories/iRouter/usage/matching-requests.html)
+- [Process the request your preferred way](http://penobit.com/repositories/iRouter/usage/processing-requests.html) -->
